@@ -2,12 +2,13 @@ import express from "express";
 import { connect } from "./schemas/index.js";
 import router from "./routers/products.router.js";
 import "dotenv/config";
+import { SERVER_PORT } from "./constants/env.comstants.js";
 
 // MongoDB 연결
 connect();
 
 const app = express();
-const PORT = process.env.SERVER_PORT;
+const PORT = SERVER_PORT;
 
 app.use(express.json());
 

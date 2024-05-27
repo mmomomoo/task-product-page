@@ -1,12 +1,7 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import {
-  CreateRequest,
-  UpdateRequest,
-  ProductIdPath,
-  Product,
-  DeleteProduct,
-} from '../schemas/product.schema.js';
+import express from "express";
+import mongoose from "mongoose";
+import { Product } from "../schemas/product.schema.js";
+import { PRODUCT_STATUS } from "../constants/priduct.constant.js";
 
 const router = express.Router();
 
@@ -17,7 +12,7 @@ const createProduct = async (req, res) => {
 
     const existingProduct = await Product.findOne({ name });
     if (existingProduct) {
-      return res.status(400).json({ message: '이미 등록된 상품입니다.' });
+      return res.status(400).json({ message: "이미 등록된 상품입니다." });
     }
 
     const newProduct = new Product({ name, description, manager, password });
@@ -27,7 +22,7 @@ const createProduct = async (req, res) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ message: '상품 생성 중 오류가 발생했습니다.', error });
+      .json({ message: "상품 생성 중 오류가 발생했습니다.", error });
   }
 };
 
@@ -39,7 +34,7 @@ const listProduct = async (req, res) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ message: '상품 목록 조회 중 오류가 발생했습니다.', error });
+      .json({ message: "상품 목록 조회 중 오류가 발생했습니다.", error });
   }
 };
 
@@ -50,14 +45,14 @@ const detailProduct = async (req, res) => {
     const product = await Product.findById(id).exec();
 
     if (!product) {
-      return res.status(404).json({ message: '상품이 존재하지 않습니다.' });
+      return res.status(404).json({ message: "상품이 존재하지 않습니다." });
     }
 
     return res.status(200).json(product);
   } catch (error) {
     return res
       .status(500)
-      .json({ message: '상품 조회 중 오류가 발생했습니다.', error });
+      .json({ message: "상품 조회 중 오류가 발생했습니다.", error });
   }
 };
 
@@ -69,19 +64,17 @@ const updateProduct = async (req, res) => {
 
     const product = await Product.findById(id).exec();
     if (!product) {
-      return res.status(404).json({ message: '상품이 존재하지 않습니다.' });
+      return res.status(404).json({ message: "상품이 존재하지 않습니다." });
     }
 
     if (product.password !== password) {
-      return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
+      return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
     }
 
-    if (status && !['FOR_SALE', 'SOLD_OUT'].includes(status)) {
-      return res
-        .status(400)
-        .json({
-          message: '상품 상태는 [FOR_SALE, SOLD_OUT] 중 하나여야 합니다.',
-        });
+    if (status && !["FOR_SALE", "SOLD_OUT"].includes(status)) {
+      return res.status(400).json({
+        message: "상품 상태는 [FOR_SALE, SOLD_OUT] 중 하나여야 합니다.",
+      });
     }
 
     product.name = name;
@@ -94,7 +87,7 @@ const updateProduct = async (req, res) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ message: '상품 수정 중 오류가 발생했습니다.', error });
+      .json({ message: "상품 수정 중 오류가 발생했습니다.", error });
   }
 };
 
@@ -106,27 +99,27 @@ const deleteProduct = async (req, res) => {
 
     const product = await Product.findById(id).exec();
     if (!product) {
-      return res.status(404).json({ message: '상품이 존재하지 않습니다.' });
+      return res.status(404).json({ message: "상품이 존재하지 않습니다." });
     }
 
     if (product.password !== password) {
-      return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
+      return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
     }
 
     await product.remove();
-    return res.status(200).json({ message: '제품이 삭제되었습니다.' });
+    return res.status(200).json({ message: "제품이 삭제되었습니다." });
   } catch (error) {
     return res
       .status(500)
-      .json({ message: '상품 삭제 중 오류가 발생했습니다.', error });
+      .json({ message: "상품 삭제 중 오류가 발생했습니다.", error });
   }
 };
 
 // 라우터에 핸들러를 정의합니다.
-router.post('/products', createProduct);
-router.get('/products', listProduct);
-router.get('/products/:id', detailProduct);
-router.put('/products/:id', updateProduct);
-router.delete('/products/:id', deleteProduct);
+router.post("/products", createProduct);
+router.get("/products", listProduct);
+router.get("/products/:id", detailProduct);
+router.put("/products/:id", updateProduct);
+router.delete("/products/:id", deleteProduct);
 
 export default router;
